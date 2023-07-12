@@ -14,6 +14,8 @@ public class agentOneController : Agent
     public GameObject[] myBullets;
     public int runSpeed;
     public Vector3 rotationSpeed = new Vector3(0, 50, 0);
+    // This bool says if agent is able to shoot
+    private bool ableToShoot = true;
 
     void Start()
     {
@@ -31,7 +33,7 @@ public class agentOneController : Agent
     }
     public override void OnEpisodeBegin()
     {
-
+        ableToShoot = true;
     }
     void Update()
     {
@@ -43,8 +45,6 @@ public class agentOneController : Agent
         sensor.AddObservation(transform.localRotation);
         sensor.AddObservation((Vector2)agentTwo.transform.localPosition);
         sensor.AddObservation(agentTwo.transform.localRotation);
-
-
     }
     public override void OnActionReceived(ActionBuffers actions)
     {
@@ -58,13 +58,19 @@ public class agentOneController : Agent
         int fire = actions.DiscreteActions[3];
 
         // Do the moving
-        transform.localPosition += new Vector3(moveX, moveY) * Time.deltaTime * runSpeed;
+        //transform.localPosition += Vector3.right * moveX * Time.deltaTime * runSpeed;
+        //transform.localPosition += Vector3.up * moveY * Time.deltaTime * runSpeed;
+
+        transform.Translate(Vector3.right * moveX * Time.deltaTime * runSpeed);
+        transform.Translate(Vector3.up * moveY * Time.deltaTime * runSpeed);
+
         transform.Rotate(rotationSpeed * Time.deltaTime * rotate);
 
         // Do the shooting
-        if(fire == 1)
-        {
-            Fire();
+        if(fire == 1 && ableToShoot) 
+        { 
+            ableToShoot = false;
+            Fire(); 
         }
     }
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -98,11 +104,18 @@ public class agentOneController : Agent
     }
     private void Fire()
     {
-        GameObject bulletInstance = Instantiate(bulletOne, transform.position, transform.rotation);
+        GameObject bulletInstance = Instantiate(bulletOne, transform.localPosition, transform.rotation);
         myBullets.Append(bulletInstance);
+        StartCoroutine(Reload());
     }
     public void OpponentKilled()
     {
         AddReward(10f);
     }
+    IEnumerator Reload()
+    {
+        yield return new WaitForSeconds(4f);
+        ableToShoot = true;
+    }
+
 }
