@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - Environment
+  - Agent1
+  - Agent2
+  - Wall
+  - Bullet
   layers:
   - Default
   - TransparentFX
