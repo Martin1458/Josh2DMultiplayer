@@ -1,15 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class bulletOneController : MonoBehaviour
 {
-    public int myAgentNum;
+    //public int myAgentNum;
     public GameObject myAgentObj;
-    // Start is called before the first frame update
     void Start()
     {
-        
+        // Finding the correct Agent obj
+        Transform parent = transform.parent;
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            GameObject sibling = parent.GetChild(i).gameObject;
+            if (sibling.tag == "Agent1")
+            {
+                Debug.Log("Doneerrrr");
+                myAgentObj = sibling;
+            }
+        }
     }
 
     void FixedUpdate()
@@ -27,6 +37,14 @@ public class bulletOneController : MonoBehaviour
             if (myAgentObj != null)
             {    
                 myAgentObj.GetComponent<agentOneController>().OpponentKilled();
+            }
+            Destroy(this.gameObject);
+        }
+        if(other.gameObject.tag == "Wall")
+        {
+            if (myAgentObj != null)
+            {
+                myAgentObj.GetComponent<agentOneController>().Missed();
             }
             Destroy(this.gameObject);
         }

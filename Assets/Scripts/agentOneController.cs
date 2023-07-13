@@ -26,6 +26,7 @@ public class agentOneController : Agent
             GameObject sibling = parent.GetChild(i).gameObject;
             if (sibling.tag == "Agent2")
             {
+                Debug.Log("Donee");
                 agentTwo = sibling;
             }
         }
@@ -104,18 +105,21 @@ public class agentOneController : Agent
     }
     private void Fire()
     {
-        GameObject bulletInstance = Instantiate(bulletOne, transform.localPosition, transform.rotation);
+        GameObject bulletInstance = Instantiate(bulletOne, transform.localPosition, transform.rotation, transform.parent);
         myBullets.Append(bulletInstance);
         StartCoroutine(Reload());
-    }
-    public void OpponentKilled()
-    {
-        AddReward(10f);
     }
     IEnumerator Reload()
     {
         yield return new WaitForSeconds(4f);
         ableToShoot = true;
     }
-
+    public void OpponentKilled()
+    {
+        AddReward(10f);
+    }
+    public void Missed()
+    {
+        AddReward(-.5f);
+    }
 }
