@@ -10,12 +10,17 @@ public class agentOneController : Agent
 {
 
     public GameObject bulletOne;
-    public GameObject agentTwo;
-    public GameObject[] myBullets;
+    private GameObject agentTwo;
     public int runSpeed;
     public Vector3 rotationSpeed = new Vector3(0, 50, 0);
     // This bool says if agent is able to shoot
     private bool ableToShoot = true;
+    private GameObject floorObj;
+    private SpriteRenderer floorRenderer;
+    private Color winColor = new Color(8f, 115f, 255f);
+    private Color loseColor = new Color(255f, 70f, 33f);
+    private Color baseColor = new Color(0f, 0f, 0f);
+
 
     void Start()
     {
@@ -26,15 +31,30 @@ public class agentOneController : Agent
             GameObject sibling = parent.GetChild(i).gameObject;
             if (sibling.tag == "Agent2")
             {
-                Debug.Log("Donee");
                 agentTwo = sibling;
+            } else if (sibling.tag == "Floor")
+            {
+                Debug.Log("idkimangry");
+                floorObj = sibling;
             }
         }
-        
+
+        if (floorObj != null)
+        {
+            floorRenderer = floorObj.GetComponent<SpriteRenderer>();
+            Debug.Log(floorRenderer);
+        } else
+        {
+            Debug.Log("The floorObj was not found");
+        }
+
     }
     public override void OnEpisodeBegin()
     {
         ableToShoot = true;
+        floorRenderer.color = new Color(45f, 0f, 0f);
+        // jdi na nahodne misto prosim
+        transform.localPosition = new Vector2(UnityEngine.Random.Range(-7f, 7f), UnityEngine.Random.Range(-7f, 7f));
     }
     void Update()
     {
@@ -103,20 +123,35 @@ public class agentOneController : Agent
         }
  
     }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if(other.gameObject.tag == "Wall")
+        {
+            floorRenderer.color = loseColor;
+            EndEpisode();
+        }
+        if (other.gameObject.tag == "Agent2") 
+        {
+            SetReward(0f);
+            EndEpisode();
+        }
+    }
     private void Fire()
     {
         GameObject bulletInstance = Instantiate(bulletOne, transform.localPosition, transform.rotation, transform.parent);
-        myBullets.Append(bulletInstance);
         StartCoroutine(Reload());
     }
     IEnumerator Reload()
     {
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(4f); 
         ableToShoot = true;
     }
     public void OpponentKilled()
     {
-        AddReward(10f);
+        SetReward(10f);
+        floorRenderer.color = winColor;
+        EndEpisode();
     }
     public void Missed()
     {

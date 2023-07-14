@@ -16,7 +16,6 @@ public class bulletOneController : MonoBehaviour
             GameObject sibling = parent.GetChild(i).gameObject;
             if (sibling.tag == "Agent1")
             {
-                Debug.Log("Doneerrrr");
                 myAgentObj = sibling;
             }
         }
@@ -44,7 +43,8 @@ public class bulletOneController : MonoBehaviour
         {
             if (myAgentObj != null)
             {
-                myAgentObj.GetComponent<agentOneController>().Missed();
+                agentOneController skriptt = myAgentObj.GetComponent<agentOneController>();
+                skriptt.Missed();
             }
             Destroy(this.gameObject);
         }

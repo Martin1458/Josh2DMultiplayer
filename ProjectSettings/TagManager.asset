@@ -9,6 +9,7 @@ TagManager:
   - Agent2
   - Wall
   - Bullet
+  - Floor
   layers:
   - Default
   - TransparentFX
