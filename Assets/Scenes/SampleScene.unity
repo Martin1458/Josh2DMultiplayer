@@ -1300,7 +1300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 12
+    VectorObservationSize: 18
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -1333,13 +1333,9 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  bulletOne: {fileID: 2097691366559597925, guid: 417a34f5b48199548a127ecca5fcdba8, type: 3}
+  bulletOnePrefab: {fileID: 0}
   runSpeed: 10
   rotationSpeed: {x: 0, y: 0, z: 120}
-  floorObj: {fileID: 0}
-  floorRenderer: {fileID: 0}
-  winColor: {r: 0.05406728, g: 0.36496896, b: 0.764151, a: 1}
-  loseColor: {r: 255, g: 70, b: 33, a: 1}
 --- !u!114 &1494272025
 MonoBehaviour:
   m_ObjectHideFlags: 0

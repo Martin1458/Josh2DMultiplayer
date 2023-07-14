@@ -5,11 +5,13 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using System.Linq;
+using UnityEditor;
 
 public class agentOneController : Agent
 {
-
-    public GameObject bulletOne;
+    public GameObject bulletOnePrefab;
+    private GameObject bulletOne;
+    private GameObject bulletTwo;
     private GameObject agentTwo;
     public int runSpeed;
     public Vector3 rotationSpeed = new Vector3(0, 50, 0);
@@ -34,7 +36,6 @@ public class agentOneController : Agent
                 agentTwo = sibling;
             } else if (sibling.tag == "Floor")
             {
-                Debug.Log("idkimangry");
                 floorObj = sibling;
             }
         }
@@ -66,6 +67,43 @@ public class agentOneController : Agent
         sensor.AddObservation(transform.localRotation);
         sensor.AddObservation((Vector2)agentTwo.transform.localPosition);
         sensor.AddObservation(agentTwo.transform.localRotation);
+
+        // Check if one or more bullets exist
+        Transform parent = transform.parent;
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            GameObject sibling = parent.GetChild(i).gameObject;
+            if (sibling.tag == "BulletOne")
+            {
+                bulletOne = sibling;
+            }
+            else if (sibling.tag == "BulletTwo")
+            {
+                bulletTwo = sibling;
+            }
+        }
+
+        if (bulletOne != null)
+        {
+            sensor.AddObservation((Vector2)bulletOne.transform.localPosition);
+            sensor.AddObservation(bulletOne.transform.localRotation);
+        } else
+        {
+            sensor.AddObservation((Vector2) new Vector2(0, 0));
+            sensor.AddObservation(0);
+        }
+
+        if (bulletTwo != null)
+        {
+            sensor.AddObservation((Vector2)bulletTwo.transform.localPosition);
+            sensor.AddObservation(bulletTwo.transform.localRotation);
+        }
+        else
+        {
+            sensor.AddObservation((Vector2) new Vector2(0, 0));
+            sensor.AddObservation(0);
+        }
+
     }
     public override void OnActionReceived(ActionBuffers actions)
     {
@@ -139,7 +177,7 @@ public class agentOneController : Agent
     }
     private void Fire()
     {
-        GameObject bulletInstance = Instantiate(bulletOne, transform.localPosition, transform.rotation, transform.parent);
+        Instantiate(bulletOnePrefab, transform.localPosition, transform.rotation, transform.parent);
         StartCoroutine(Reload());
     }
     IEnumerator Reload()
