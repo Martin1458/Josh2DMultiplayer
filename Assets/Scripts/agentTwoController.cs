@@ -7,20 +7,20 @@ using Unity.MLAgents.Sensors;
 using System.Linq;
 using UnityEditor;
 
-public class agentOneController : Agent
+public class agentTwoController : Agent
 {
-    public GameObject bulletOnePrefab;
+    public GameObject bulletTwoPrefab;
     private GameObject bulletOne;
     private GameObject bulletTwo;
-    private GameObject agentTwo;
+    private GameObject agentOne;
     private int runSpeed = 10;
     private Vector3 rotationSpeed = new Vector3(0, 0, 120);
     // This bool says if agent is able to shoot
     private bool ableToShoot = true;
     private GameObject floorObj;
     private SpriteRenderer floorRenderer;
-    private Color winColor = new Color(8f, 115f, 255f);
-    private Color loseColor = new Color(255f, 70f, 33f);
+    private Color loseColor = new Color(8f, 115f, 255f);
+    private Color winColor = new Color(255f, 70f, 33f);
     private Color baseColor = new Color(0f, 0f, 0f);
 
 
@@ -31,10 +31,11 @@ public class agentOneController : Agent
         for (int i = 0; i < parent.childCount; i++)
         {
             GameObject sibling = parent.GetChild(i).gameObject;
-            if (sibling.tag == "Agent2")
+            if (sibling.tag == "Agent1")
             {
-                agentTwo = sibling;
-            } else if (sibling.tag == "Floor")
+                agentOne = sibling;
+            }
+            else if (sibling.tag == "Floor")
             {
                 floorObj = sibling;
             }
@@ -44,7 +45,8 @@ public class agentOneController : Agent
         {
             floorRenderer = floorObj.GetComponent<SpriteRenderer>();
             Debug.Log(floorRenderer);
-        } else
+        }
+        else
         {
             Debug.Log("The floorObj was not found");
         }
@@ -59,14 +61,14 @@ public class agentOneController : Agent
     }
     void Update()
     {
-        
+
     }
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation((Vector2)transform.localPosition);
         sensor.AddObservation(transform.localRotation);
-        sensor.AddObservation((Vector2)agentTwo.transform.localPosition);
-        sensor.AddObservation(agentTwo.transform.localRotation);
+        sensor.AddObservation((Vector2)agentOne.transform.localPosition);
+        sensor.AddObservation(agentOne.transform.localRotation);
 
         // Check if one or more bullets exist
         Transform parent = transform.parent;
@@ -83,15 +85,6 @@ public class agentOneController : Agent
             }
         }
 
-        if (bulletOne != null)
-        {
-            sensor.AddObservation((Vector2)bulletOne.transform.localPosition);
-            sensor.AddObservation(bulletOne.transform.localRotation);
-        } else
-        {
-            sensor.AddObservation((Vector2) new Vector2(0, 0));
-            sensor.AddObservation(0);
-        }
 
         if (bulletTwo != null)
         {
@@ -100,10 +93,20 @@ public class agentOneController : Agent
         }
         else
         {
-            sensor.AddObservation((Vector2) new Vector2(0, 0));
+            sensor.AddObservation((Vector2)new Vector2(0, 0));
             sensor.AddObservation(0);
         }
 
+        if (bulletOne != null)
+        {
+            sensor.AddObservation((Vector2)bulletOne.transform.localPosition);
+            sensor.AddObservation(bulletOne.transform.localRotation);
+        }
+        else
+        {
+            sensor.AddObservation((Vector2)new Vector2(0, 0));
+            sensor.AddObservation(0);
+        }
     }
     public override void OnActionReceived(ActionBuffers actions)
     {
@@ -126,10 +129,10 @@ public class agentOneController : Agent
         transform.Rotate(rotationSpeed * Time.deltaTime * rotate);
 
         // Do the shooting
-        if(fire == 1 && ableToShoot) 
-        { 
+        if (fire == 1 && ableToShoot)
+        {
             ableToShoot = false;
-            Fire(); 
+            Fire();
         }
     }
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -146,30 +149,32 @@ public class agentOneController : Agent
         if (Input.GetKey(KeyCode.F))
         {
             DiscreteActions[2] += 1;
-        } 
-        if(Input.GetKey(KeyCode.J))
+        }
+        if (Input.GetKey(KeyCode.J))
         {
             DiscreteActions[2] -= 1;
         }
 
         // 0 = nothing; 1 = fire
-        if (Input.GetKey(KeyCode.Space)) 
+        if (Input.GetKey(KeyCode.Space))
         {
-            DiscreteActions[3] = 1;  
-        } else {
+            DiscreteActions[3] = 1;
+        }
+        else
+        {
             DiscreteActions[3] = 0;
         }
- 
+
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.gameObject.tag == "Wall")
+        if (other.gameObject.tag == "Wall")
         {
             floorRenderer.color = loseColor;
             EndEpisode();
         }
-        if (other.gameObject.tag == "Agent2") 
+        if (other.gameObject.tag == "Agent1")
         {
             SetReward(0f);
             EndEpisode();
@@ -177,12 +182,12 @@ public class agentOneController : Agent
     }
     private void Fire()
     {
-        Instantiate(bulletOnePrefab, transform.localPosition, transform.rotation, transform.parent);
+        Instantiate(bulletTwoPrefab, transform.localPosition, transform.rotation, transform.parent);
         StartCoroutine(Reload());
     }
     IEnumerator Reload()
     {
-        yield return new WaitForSeconds(4f); 
+        yield return new WaitForSeconds(4f);
         ableToShoot = true;
     }
     public void OpponentKilled()

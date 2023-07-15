@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class bulletOneController : MonoBehaviour
+public class bulletTwoController : MonoBehaviour
 {
     //public int myAgentNum;
     private GameObject myAgentObj;
@@ -14,7 +13,7 @@ public class bulletOneController : MonoBehaviour
         for (int i = 0; i < parent.childCount; i++)
         {
             GameObject sibling = parent.GetChild(i).gameObject;
-            if (sibling.tag == "Agent1")
+            if (sibling.tag == "Agent2")
             {
                 myAgentObj = sibling;
             }
@@ -30,16 +29,16 @@ public class bulletOneController : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.tag == "Agent2")
+        if (other.gameObject.tag == "Agent1")
         {
             Destroy(other.gameObject);
             if (myAgentObj != null)
-            {    
+            {
                 myAgentObj.GetComponent<agentOneController>().OpponentKilled();
             }
             Destroy(this.gameObject);
         }
-        if(other.gameObject.tag == "Wall")
+        if (other.gameObject.tag == "Wall")
         {
             if (myAgentObj != null)
             {
